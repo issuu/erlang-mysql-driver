@@ -440,10 +440,7 @@ do_query(Sock, RecvPid, LogFun, Query, Version) ->
 	    get_query_response(LogFun,RecvPid,
 				    Version);
 	{error, Reason} ->
-	    Msg = io_lib:format("Failed sending data "
-				"on socket : ~p",
-				[Reason]),
-	    {error, Msg}
+	    {error, Reason}
     end.
 
 do_queries(State, Queries) when not is_list(Queries) ->
