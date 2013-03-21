@@ -418,7 +418,7 @@ send_reply(GenSrvFrom, Res) when is_pid(GenSrvFrom) ->
     %% The query was not sent using gen_server mechanisms       
     GenSrvFrom ! {fetch_result, self(), Res};
 send_reply(GenSrvFrom, {error, closed} = Res) ->
-    gen_server:reply(GenSrvFom, Res),
+    gen_server:reply(GenSrvFrom, Res),
     exit(Res);
 send_reply(GenSrvFrom, Res) ->
     gen_server:reply(GenSrvFrom, Res).
