@@ -120,7 +120,9 @@
 
 	 encode/1,
 	 encode/2,
-	 asciz_binary/2
+	 asciz_binary/2,
+
+          pool_pids/0
 	]).
 
 %% Internal exports - just for mysql_* modules
@@ -515,6 +517,9 @@ connect(PoolId, Host, undefined, User, Password, Database, Reconnect) ->
     connect(PoolId, Host, ?PORT, User, Password, Database, undefined,
 	    Reconnect).
 
+pool_pids() ->
+    gen_server:call(?SERVER, pool_pids, 60000).
+
 %% gen_server callbacks
 
 init([PoolId, Host, Port, User, Password, Database, LogFun, Encoding]) ->
@@ -545,6 +550,9 @@ init([PoolId, Host, Port, User, Password, Database, LogFun, Encoding]) ->
 handle_call({fetch, PoolId, Query}, From, State) ->
     fetch_queries(PoolId, From, State, [Query]);
 
+handle_call(pool_pids, _From, #state { conn_pools = ConnPools } = State) ->
+    Reply = [{Name, Unused ++ Used} || {Name, {Unused, Used}} <- gb_trees:to_list(ConnPools)],
+    {reply, Reply, State};
 handle_call({get_prepared, Name, Version}, _From, State) ->
     case gb_trees:lookup(Name, State#state.prepares) of
 	none ->
