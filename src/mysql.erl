@@ -4,7 +4,7 @@
 %%%
 %%% Created :  4 Aug 2005 by Magnus Ahltorp <ahltorp@nada.kth.se>
 %%%
-%%% Copyright (c) 2001-2004 Kungliga Tekniska Högskolan
+%%% Copyright (c) 2001-2004 Kungliga Tekniska Hï¿½gskolan
 %%% See the file COPYING
 %%%
 %%% Modified: 9/12/2006 by Yariv Sadan <yarivvv@gmail.com>
@@ -551,7 +551,9 @@ handle_call({fetch, PoolId, Query}, From, State) ->
     fetch_queries(PoolId, From, State, [Query]);
 
 handle_call(pool_pids, _From, #state { conn_pools = ConnPools } = State) ->
-    Reply = [{Name, Unused ++ Used} || {Name, {Unused, Used}} <- gb_trees:to_list(ConnPools)],
+    Reply = [{Name,
+               lists:map(fun(#conn { pid = P}) -> P end,
+                         Unused ++ Used)} || {Name, {Unused, Used}} <- gb_trees:to_list(ConnPools)],
     {reply, Reply, State};
 handle_call({get_prepared, Name, Version}, _From, State) ->
     case gb_trees:lookup(Name, State#state.prepares) of
